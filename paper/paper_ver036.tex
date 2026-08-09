@@ -52,43 +52,42 @@ estimators transposed to per-cell angular configuration counts --- can still
 spend remaining coverage on}, rather than how to move or when to switch modes.
 
 Following a strict preregistered protocol (paired seeds, Wilcoxon +
-Holm-Bonferroni, coverage guard, hard validation gate), the richness signal is
-falsified as a direct target-selection signal (Phase-1/E1) and as a
-mode-switching signal (Deploy-U, E2/E3), and the E4 primary
-\texttt{quality\_auc} --- the binary fraction of cells localized above
+Holm-Bonferroni, coverage guard, hard validation gate), the confirmed result
+is a signal family --- config-count richness --- which, anchored against the
+Random floor and the classical occupancy-entropy baselines Entropy-Frac and
+Frontier+Entropy ($n = 40$ paired), is the only signal family that beats the
+\FB{} movement frame on residual bound at equal-or-better coverage. Its
+accuracy-optimal member is \textbf{Richness-Angular} (\RA{}): a median
+residual-bound reduction of \textbf{23--32\%} across regimes, Holm-significant
+versus FB in \textbf{15 of 16} cells across all four confirmatory robustness
+axes (self-localization noise, mission budget, fusion range, bearing noise) ---
+its only attenuation is $\sigma = 1.0$ in A3 ($+3.3\%$, $ns$), where it stays
+positive where \CU{} inverts --- the only family member with no robustness
+blind spot, and the only one whose edge survives 20\% obstacle density.
+Against a benchmarked GDOP/FIM baseline it is accuracy-co-optimal but
+\textbf{coverage-dominant}, holding equal-or-better coverage at
+$\approx 2.3\times$ lower compute.
+
+The family was reached through a documented discovery path rather than
+announced ex ante. Richness is falsified as a direct target-selection signal
+(Phase-1/E1) and as a mode-switching signal (Deploy-U, E2/E3), and the E4
+primary \texttt{quality\_auc} --- the binary fraction of cells localized above
 threshold --- is null as well: that fraction saturates under finite budgets.
 The confirmed effect is on a distinct pre-specified secondary metric,
 \texttt{mean\_bound\_final} (the continuous residual CRLB bound at mission end,
 tracked since E2/E3): a coherent $n = 10$ signal, reported explicitly as a
 discovery rather than a verdict, motivated a separate higher-power
 preregistration (E4-CONFIRM, protocol locked before its runs) that promoted it
-to primary with pre-specified success criteria.
-
-The result is a signal family --- config-count richness --- which, anchored
-against the Random floor and the classical occupancy-entropy baselines
-Entropy-Frac and Frontier+Entropy ($n = 40$ paired), is the only signal family
-that beats the \FB{} movement frame on residual bound at equal-or-better
-coverage. Its accuracy-optimal member is \textbf{Richness-Angular} (\RA{}): a
-median residual-bound reduction of \textbf{23--32\%} across regimes,
-Holm-significant versus FB in \textbf{15 of 16} cells across all four
-confirmatory robustness axes (self-localization noise, mission budget, fusion
-range, bearing noise) --- its only attenuation is $\sigma = 1.0$ in A3
-($+3.3\%$, $ns$), where it stays positive where \CU{} inverts --- the only
-family member with no robustness blind spot, and the only one whose edge
-survives 20\% obstacle density. Against a benchmarked GDOP/FIM baseline it is
-accuracy-co-optimal but \textbf{coverage-dominant}, holding equal-or-better
-coverage at $\approx 2.3\times$ lower compute.
-
-The family's discovered, canonical member is \textbf{continuous U-prioritized
-coverage} (\CU{}: an FB target-score weighted by the local count of angularly
-under-determined cells, $\lambda=0.5$): it reduces the residual oracle CRLB
-bound at mission end by a median of \textbf{20.9\%} relative to FB across four
-regimes (Holm-significant in three of four, Fisher combined $p\approx 0$),
-\textbf{with no coverage regression} and a corroborating reduction in
-never-observed cells. The effect is robust across $\lambda \in [0.25, 2.0]$
-(a plateau, not a knife-edge), conditional on sparse-obstacle environments, and
-specific to the budget-limited regime: in unbounded episodes final localization
-quality is at parity.
+to primary with pre-specified success criteria. Its canonical member,
+\textbf{continuous U-prioritized coverage} (\CU{}: an FB target-score weighted
+by the local count of angularly under-determined cells, $\lambda=0.5$), reduces
+the residual oracle CRLB bound at mission end by a median of \textbf{20.9\%}
+relative to FB across four regimes (Holm-significant in three of four, Fisher
+combined $p\approx 0$), \textbf{with no coverage regression} and a
+corroborating reduction in never-observed cells. The effect is robust across
+$\lambda \in [0.25, 2.0]$ (a plateau, not a knife-edge), conditional on
+sparse-obstacle environments, and specific to the budget-limited regime: in
+unbounded episodes final localization quality is at parity.
 
 We interpret the results as evidence that config-count richness is a reliable
 state witness that becomes an operating lever precisely when mission time ---
