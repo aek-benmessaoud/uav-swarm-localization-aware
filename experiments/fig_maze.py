@@ -37,17 +37,18 @@ def maze_env(seed):
 
 def fig_maps():
     seeds = [env_seed_for_run(r) for r in range(16)]
-    fig, axes = plt.subplots(4, 4, figsize=(12, 12))
-    for ax, seed in zip(axes.ravel(), seeds):
+    examples = (seeds[0], seeds[15])
+    fig, axes = plt.subplots(1, 2, figsize=(9, 4.5))
+    for ax, seed in zip(axes, examples):
         env = maze_env(seed)
         ax.imshow(env.obstacle_map, cmap="Greys", vmin=0, vmax=1,
                   interpolation="nearest")
-        ax.set_title(f"seed {seed}", fontsize=9)
+        ax.set_title(f"seed {seed}", fontsize=10)
         ax.set_xticks([])
         ax.set_yticks([])
     fig.suptitle("Kruskal perfect mazes — 100x100, C=49 (topology=maze)",
                  fontsize=13, y=0.995)
-    fig.tight_layout(rect=(0, 0, 1, 0.985))
+    fig.tight_layout(rect=(0, 0, 1, 0.97))
     for ext in ("png", "pdf"):
         fig.savefig(os.path.join(FIG_OUT, f"fig_maze_maps.{ext}"), dpi=200)
     plt.close(fig)

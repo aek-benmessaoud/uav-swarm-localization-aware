@@ -279,13 +279,20 @@ J = \sum_k \frac{u_k u_k^{\top}}{\sigma^2 d_k^2},
 \end{equation}
 with $u_k$ the unit bearing vector to the $k$-th observing pose, $d_k$ the
 distance, and $\sigma$ the nominal bearing precision of $1^\circ$. The per-cell
-bound is $b = \sqrt{\operatorname{trace}(J^{-1})}$ in grid-cell units. A cell
-is \emph{well-localized} when $b \le \texttt{QUALITY\_THRESHOLD} = 1.5$ cells.
-The primary continuous accuracy metric is the \emph{mean residual bound} across
-traversable cells at mission end, \texttt{mean\_bound\_final} (lower is
+bound is, in grid-cell units,
+\begin{equation}
+b = \sqrt{\operatorname{trace}(J^{-1})}.
+\label{eq:crlb_bound}
+\end{equation}
+A cell is \emph{well-localized} when $b \le \texttt{QUALITY\_THRESHOLD} = 1.5$
+cells. The primary continuous accuracy metric is the \emph{mean residual bound}
+across traversable cells at mission end, \texttt{mean\_bound\_final} (lower is
 better); the binary fraction of well-localized cells is
-$\mathrm{quality}(t) = \text{fraction with } b \le \text{threshold}$, sampled
-every 25 steps (normalized AUC = \texttt{quality\_auc}).
+\begin{equation}
+\mathrm{quality}(t) = \frac{\text{traversable cells with } b \le
+\texttt{QUALITY\_THRESHOLD} \text{ at step } t}{\text{traversable cells}},
+\end{equation}
+sampled every 25 steps (normalized AUC = \texttt{quality\_auc}).
 
 \subsection{Communication model}
 Agents use limited-range communication: two agents within
@@ -378,10 +385,14 @@ E5 defines an infeasible centralized control with perfect map knowledge that
 maximizes the same score form using global under-sets --- either the
 config-count signal under perfect fusion (CentralOracle-Config) or the true
 CRLB bottleneck (CentralOracle-CRLB). It anchors the transposition ratio
-$\rho = \mathrm{reduction}(\CU) / \mathrm{reduction}(\text{CentralCRLB})$.
-Section~VI-I reports the completed campaign, its diagnostic extension
-(coverage-guarded oracle variants, which cannot bind), and the frame-matched
-re-run (E5-CORRECTED) that isolates the signal effect.
+\begin{equation}
+\rho = \mathrm{reduction}(\CU) / \mathrm{reduction}(\text{CentralCRLB}),
+\label{eq:transposition}
+\end{equation}
+which measures how much of the centralized accuracy gain a decentralized
+config-count proxy captures. Section~VI-I reports the completed campaign, its
+diagnostic extension (coverage-guarded oracle variants, which cannot bind), and
+the frame-matched re-run (E5-CORRECTED) that isolates the signal effect.
 
 \subsection{Comparison baselines (occupancy entropy)}
 We also compare against classical occupancy-entropy baselines: Entropy-Frac
@@ -445,12 +456,10 @@ E5-CORRECTED & Local frame + global signal? & mean\_bound\_final & 40 & FAIL (lo
 \section{Results}
 \subsection{Phase 1a: metric validation (gate)}
 The oracle CRLB bound is a valid accuracy proxy: pooled across 95{,}000 tested
-cells (91{,}530 localizable), $\rho(\text{bound, empirical error}) = 
-0.638
- on localizable cells ($p < 0.05$, min 0.5), and the local richness
-signal correlates negatively with empirical error ($\rho(U\_local, error) = 
--0.457
-, max $-0.4$, $p < 0.05$). Both conditions pass and the gate is GO. This
+cells (91{,}530 localizable), $\rho(\text{bound}, \text{empirical error}) = 0.638$
+on localizable cells ($p < 0.05$, min 0.5), and the local richness signal
+correlates negatively with empirical error ($\rho(U_{\text{local}}, \text{error}) =
+-0.457$, max $-0.4$, $p < 0.05$). Both conditions pass and the gate is GO. This
 is the evidence that the evaluation metric and the decision signal are both
 meaningful indicators of localization work.
 
@@ -690,7 +699,9 @@ under-coverage component is the part that saturates.
 Serial benchmark (A6 regime, $n = 10$, \texttt{time.process\_time} inside
 \texttt{select\_action}). The claim that \CU{} is comparable to FB and cheaper
 than classical information scorers is now supported by measured CPU timings
-(Table~\ref{tab:cpu}):
+(Table~\ref{tab:cpu}). \RA{} is the most expensive of the two candidates
+($\approx 3.55$ ms, measured on the same interleaved benchmark), while \CU{}
+stays at FB cost.
 
 \begin{table}[t]
 \caption{CPU/decision, A6\_obs005, $n = 10$, single process.}
@@ -703,6 +714,7 @@ Method & ms/decision (median) \\
 Random & 0.74 \\
 Frontier-Bounded & 2.16 \\
 Coverage-U & 2.17 \\
+Richness-Angular & 3.55 \\
 Entropy-Frac & 2.52 \\
 \bottomrule
 \end{tabular}
@@ -890,9 +902,10 @@ which keeps the coverage term in the trade-off --- the mechanism that makes
 \CU{} work. The qualitative conclusion of E5 survives the confound fix: what
 matters is the \textbf{locality of the decision signal}, not its strength.
 
-\subsection{Robustness sweeps (post-preregistration, confirmatory)}
-After the preregistered campaign we ran four confirmatory robustness sweeps on
-the two confirmed regimes (A3, A6; $n = 40$ paired each, same seed ladder, same
+\subsection{Robustness sweeps (confirmatory)}
+Following the preregistered campaign, we ran four confirmatory robustness
+sweeps on the two confirmed regimes (A3, A6; $n = 40$ paired each, same seed
+ladder, same
 Wilcoxon + Holm protocol) to map the boundary conditions of the \CU{} effect.
 \emph{Self-localization noise.} The local decision signal is corrupted by
 zero-mean Gaussian noise with std $\sigma \in \{0.5, 1.0\}$ grid cells, while
@@ -1087,7 +1100,7 @@ therefore marks the boundary of the free lunch --- at such tight budgets an
 accuracy gain must cost coverage, exactly the trade-off the paper predicts ---
 and the 0.5--0.7 operating window is where \CU{} improves accuracy at no
 significant coverage cost, the regime the paper's claim targets. These are
-post-preregistration confirmatory follow-ups and are labeled as such.
+confirmatory follow-ups and are labeled as such.
 
 \begin{table*}[t]
 \caption{Coverage guard across all sweep cells ($n = 40$ paired; Holm applied within each sweep). $\Delta =$ CU cov $-$ FB cov (pp); $\Delta > 0$ favours \CU; guard regression $=$ CU significantly below FB.}
@@ -1135,12 +1148,12 @@ A6 (6 UAVs) & $E{:}\sigma\theta{=}2^\circ$ & 68.3 & 68.1 & -0.1 & 0.8057 & 0.805
 
 
 \subsection{Topology generalization: maze and cluster environments
-(post-submission, confirmatory)}
-The campaign above is bounded to the open-space grid (random obstacle
-topology, Section~VIII). After submission we ran a post-submission topology
-dossier to map the boundary of the confirmed effects, keeping the manuscript
-frozen: the numbers and narrative below are confirmatory extensions, not part
-of the preregistered protocol. Two new environment families extend
+(confirmatory extension)}
+The campaigns above are bounded to the open-space grid (random obstacle
+topology, Section~VIII). As part of the same experimental campaign, we
+additionally mapped the boundary of the confirmed effects across two new
+environment families that keep the protocol unchanged. Two new environment
+families extend
 \texttt{GridEnv} with the same line-of-sight FOV occlusion but different
 routing structure. \emph{Mazes} (\texttt{env.py} \texttt{\_build\_maze\_map}):
 a Kruskal randomized perfect maze on a $C=49$ cell grid --- ONE connected free
@@ -1153,9 +1166,10 @@ multiple routing paths. The random topology keeps the historical square-FOV
 model (non-regression). Every campaign follows the same protocol family as the
 main budget campaigns: $n = 40$ paired seeds ($0\ldots 39000$), methods
 \{FB, Coverage-U, Richness-Angular\}, Wilcoxon + Holm across the three pairwise
-comparisons on \texttt{quality\_auc} @ $T$ (primary) with the final-coverage
-guard, and budget $T = 0.7 \times$ FB median \texttt{steps\_90} measured per
-topology by a probe (maze 1323, cluster A6 1354, cluster A3 2710 steps).
+comparisons on \texttt{quality\_auc} at mission end (budget $T$) (primary)
+with the final-coverage guard, and budget $T = 0.7 \times$ FB median
+\texttt{steps\_90} measured per topology by a probe (maze 1323, cluster A6
+1354, cluster A3 2710 steps).
 
 \paragraph{A. Perfect maze: the open-space advantage flips sign under
 single-path routing.}
@@ -1174,9 +1188,11 @@ instead of pushing dead-end progress. The directional MAexp-coherent check
 (RA $\geq$ CU) is not confirmed here (medians equal).
 
 \begin{table}[t]
-\caption{Maze family, \texttt{quality\_auc} @ $T$ (higher better), $n = 40$ paired per campaign; rel-gain\% vs baseline B per the paper's convention; Holm across the 3 pairs. Perfect maze (A6): both candidates lose significantly. H=16: CU is bit-identical to H=8 ($-2.1\%$, Holm-sig), RA improves to ns.}
+\caption{Maze family, \texttt{quality\_auc} at mission end (budget $T$) (higher better), $n = 40$ paired per campaign; rel-gain\% vs baseline B per the paper's convention; Holm across the 3 pairs. Perfect maze (A6): both candidates lose significantly. H=16: CU is bit-identical to H=8 ($-2.1\%$, Holm-sig), RA improves to ns.}
 \label{tab:topo_maze}
 \centering
+\small
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{l l c c c c c}
 \toprule
 Campaign & A vs B & med\_A & med\_B & gain\% & $p$ & $p$\_Holm \\
@@ -1205,7 +1221,7 @@ $p < 0.001$), consistent with loops diluting the corridor over-lingering.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig_maze_maps.png}
-\caption{Sixteen Kruskal perfect mazes (topology=maze, $100 \times 100$,
+\caption{Two representative Kruskal perfect mazes (topology=maze, $100 \times 100$,
 $C=49$, wall fraction $\approx 52\%$); the free space is a single connected
 component with exactly one path between any two cells.}
 \label{fig:maze_maps}
@@ -1246,9 +1262,11 @@ maze failure is therefore caused by the loss of routing (single-path spanning
 tree), not by occlusion itself.
 
 \begin{table}[t]
-\caption{Cluster family, \texttt{quality\_auc} @ $T$ (higher better), $n = 40$ paired per campaign. A6 (T=1354): RA +3.0\% vs FB (Holm-sig), RA $\geq$ CU confirmed, CU neutral. A3 pass-2 (T=2710): RA +2.6\% vs FB (Holm-sig), RA vs CU +6.3\% (strongest delta), CU neutral.}
+\caption{Cluster family, \texttt{quality\_auc} at mission end (budget $T$) (higher better), $n = 40$ paired per campaign. A6 (T=1354): RA +3.0\% vs FB (Holm-sig), RA $\geq$ CU confirmed, CU neutral. A3 pass-2 (T=2710): RA +2.6\% vs FB (Holm-sig), RA vs CU +6.3\% (strongest delta), CU neutral.}
 \label{tab:topo_cluster}
 \centering
+\small
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{l l c c c c c}
 \toprule
 Campaign & A vs B & med\_A & med\_B & gain\% & $p$ & $p$\_Holm \\
@@ -1266,7 +1284,7 @@ clusters 20\% (A3) & ANGULAR vs U & 0.799 & 0.754 & +6.3 & $<$0.0001 & 0.0002 \\
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig_cluster_maps.png}
-\caption{Sixteen cluster maps (topology=cluster, $100 \times 100$, 20\%
+\caption{Two representative cluster maps (topology=cluster, $100 \times 100$, 20\%
 contiguous obstacle blocks, outer edge ring free). Real occlusion, preserved
 multi-path routing.}
 \label{fig:cluster_maps}
@@ -1298,9 +1316,10 @@ Holm-sig, RA $\geq$ CU confirmed); clusters 20\% A3 = RA advantage reproduced
 (+2.6\% Holm-sig). The mechanistic story is now coherent across the whole
 corpus: open space and clusters (multi-path) keep the advantage, a perfect
 maze (single path) flips it negative, and loops (partial routing) sit between.
-What matters is routing redundancy, not spatial fragmentation per se. This is a
-post-submission confirmatory extension and is labeled as such; the paper's
-headline claims (sparse open space, Sections~VI-D--VI-J) are unchanged.
+What matters is routing redundancy, not spatial fragmentation per se. These
+topology campaigns are a confirmatory extension of the same experimental
+campaign and are labeled as such; the paper's headline claims (sparse open
+space, Sections~VI-D--VI-J) are unchanged.
 
 
 \section{Discussion}
@@ -1321,8 +1340,9 @@ the traces: standard coverage spends remaining time reaching cheap frontier
 cells, leaving angular gaps; \CU{} spends the same steps re-observing
 under-determined cells. The result matches the classical GDOP intuition
 \cite{Bishop2004, Bishop2009} --- accuracy is bought with baseline geometry ---
-and shows that a \emph{local, cheap} proxy can capture part of that intuition
-without a centralized planner.
+and shows that this same signal, computed only from each agent's own local
+observations, can capture part of that intuition without a centralized
+planner.
 
 \paragraph{Why the primary metric failed and what it teaches.}
 \texttt{quality\_auc} is a thresholded binary fraction that saturates; it
@@ -1352,7 +1372,7 @@ most --- and its angular variant extends the benefit to denser obstacle fields.
 
 \paragraph{Topology: routing redundancy, not occlusion, is the boundary
 variable.}
-The post-submission topology dossier (Section~VI-K) isolates the mechanism.
+The topology dossier (Section~VI-K) isolates the mechanism.
 Under single-path routing (perfect maze), both candidates' open-space bonus
 flips sign --- a significant coverage regression (not a precision one) driven
 by corridor over-lingering; re-opening 10\% of the walls neutralizes the
@@ -1398,7 +1418,7 @@ so it measures localization work rather than sensor-model fidelity.
 Bearing/measurement noise and dropout sit outside the paper's question and
 would affect every method under comparison equally in the paired design.
 \item The environment is a single-scale grid with randomly placed obstacles ---
-the topology the effect is claimed for. A post-submission topology dossier
+the topology the effect is claimed for. A topology dossier
 (Section~VI-K) extends this with maze and cluster layouts under the same LOS
 model: the advantage survives occlusion when routing is preserved (clusters)
 and flips negative under single-path routing (perfect maze); multi-floor
@@ -1504,7 +1524,7 @@ oscillation; \CU{} provides a stable, equally cheap continuous weighting that is
 optimal in sparse environments and robust across its plateau. The universal
 takeaway is not which signal wins, but the \textbf{locality} of the decision
 signal: the same under-set gains $\sim$+30\% scored locally and regresses fused
-globally. The post-submission topology dossier (Section~VI-K) sharpens the
+globally. The topology dossier (Section~VI-K) sharpens the
 boundary: the advantage survives line-of-sight occlusion when routing choice is
 preserved (cluster topologies, reproduced at 3 and 6 UAVs) and flips negative
 only under single-path routing (perfect maze) --- routing redundancy, not
@@ -1551,7 +1571,7 @@ claims of the paper (sparse open space, Sections~VI-D--VI-J) are unchanged.
 
 \bibitem{Liu2026} H. Liu, W. Jiang, Q. Long, Q. Xia, and X. Chen, ``A high-precision cooperative localization method for UAVs based on multi-condition constraints,'' Sensors, vol. 26, no. 5, art. 1641, 2026.
 
-\bibitem{Li2026} D. Li, Y. Wang, Z. Li, L. Zhang, J. Luo, Y. Yu, and J. Cheng, ``Formation-constrained cooperative localization for UAV swarms in GNSS-denied environments,'' Sensors, vol. 26, no. 6, art. 1984, 2026.
+\bibitem{Li2026} Q. Li, P. Wang, X. Li, J. Zhang, Y. Luo, W. Yu, and H. Cheng, ``Formation-constrained cooperative localization for UAV swarms in GNSS-denied environments,'' Sensors, vol. 26, no. 6, art. 1984, 2026.
 
 \bibitem{Ruan2022} J. Ruan, S. Li, Y. Dai, Y. Tian, Q. Fan, C. Wang, and W. Dai, ``Cooperative relative localization for UAV swarm in GNSS-denied environment based on coalition formation game,'' IEEE Internet of Things Journal, vol. 9, no. 13, pp. 11560--11577, 2022.
 
