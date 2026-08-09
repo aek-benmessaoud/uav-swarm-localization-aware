@@ -52,10 +52,9 @@ estimators transposed to per-cell angular configuration counts --- can still
 spend remaining coverage on}, rather than how to move or when to switch modes.
 
 Following a strict preregistered protocol (paired seeds, Wilcoxon +
-Holm-Bonferroni, coverage guard, hard validation gate), we report three
-documented falsifications and one confirmed effect. Richness as a direct
-target-selection signal (Phase-1/E1) and as a mode-switching signal (Deploy-U,
-E2/E3) do not beat the FB control, and the E4 primary
+Holm-Bonferroni, coverage guard, hard validation gate), the richness signal is
+falsified as a direct target-selection signal (Phase-1/E1) and as a
+mode-switching signal (Deploy-U, E2/E3), and the E4 primary
 \texttt{quality\_auc} --- the binary fraction of cells localized above
 threshold --- is null as well: that fraction saturates under finite budgets.
 The confirmed effect is on a distinct pre-specified secondary metric,
@@ -63,40 +62,44 @@ The confirmed effect is on a distinct pre-specified secondary metric,
 tracked since E2/E3): a coherent $n = 10$ signal, reported explicitly as a
 discovery rather than a verdict, motivated a separate higher-power
 preregistration (E4-CONFIRM, protocol locked before its runs) that promoted it
-to primary with pre-specified success criteria. There,
-\textbf{continuous U-prioritized coverage} (\CU: an FB target-score weighted by
-the local count of angularly under-determined cells, $\lambda=0.5$) reduces the
-residual oracle CRLB bound at mission end by a median of \textbf{20.9\%}
-relative to FB across four regimes (Holm-significant in three of four, Fisher
-combined $p\approx 0$), \textbf{with no coverage regression} and a
-corroborating reduction in never-observed cells. Anchored against the Random
-floor and the classical occupancy-entropy baselines Entropy-Frac and
-Frontier+Entropy ($n=40$ paired),
-the config-count family is the only signal family that beats the FB movement
-frame on residual bound at equal-or-better coverage: \CU{} reduces it by a
-median 20.9\% and \RA{} by 23--32\% across regimes, and \RA{} is the only
-method whose advantage survives 20\% obstacle density. Confirmatory sweeps
-(self-localization noise $\sigma = 0.5/1.0$, budget, fusion range, bearing
-noise) show that \RA{} is Holm-significant versus FB in 15 of 16 sweep cells
-across both regimes --- its only attenuation is $\sigma = 1.0$ in A3
+to primary with pre-specified success criteria.
+
+The result is a signal family --- config-count richness --- which, anchored
+against the Random floor and the classical occupancy-entropy baselines
+Entropy-Frac and Frontier+Entropy ($n = 40$ paired), is the only signal family
+that beats the \FB{} movement frame on residual bound at equal-or-better
+coverage. Its accuracy-optimal member is \textbf{Richness-Angular} (\RA{}): a
+median residual-bound reduction of \textbf{23--32\%} across regimes,
+Holm-significant versus FB in \textbf{15 of 16} cells across all four
+confirmatory robustness axes (self-localization noise, mission budget, fusion
+range, bearing noise) --- its only attenuation is $\sigma = 1.0$ in A3
 ($+3.3\%$, $ns$), where it stays positive where \CU{} inverts --- the only
-member of the family with no robustness blind spot --- while a benchmarked
-GDOP/FIM baseline is accuracy-co-optimal
-with \RA{} but coverage-dominated by the family at $\approx 2.3\times$ compute.
-The effect is robust
-across $\lambda \in [0.25, 2.0]$ (a plateau, not a knife-edge), conditional on
-sparse-obstacle environments, and specific to the budget-limited regime: in
-unbounded episodes final localization quality is at parity. We interpret the
-results as evidence that config-count richness is a reliable state witness
-that becomes an operating lever precisely when mission time --- not distance
---- is the scarce resource. A centralized perfect oracle (E5, $n = 40\times2$)
-regresses both metrics, and the local-vs-global ladder isolates why: the same
-config-count signal reduces the residual bound $\sim$+30\% when scored locally
-and regresses when the same under-set is fused globally. Re-running both
-oracle signals in \CU's{} own local movement frame (E5-CORRECTED, $n=40$)
-confirms the effect is the \emph{signal}, not the oracle's global movement
-frame --- evidence that \textbf{locality, not signal strength}, is what makes
-the accuracy/coverage trade-off attainable.
+family member with no robustness blind spot, and the only one whose edge
+survives 20\% obstacle density. Against a benchmarked GDOP/FIM baseline it is
+accuracy-co-optimal but \textbf{coverage-dominant}, holding equal-or-better
+coverage at $\approx 2.3\times$ lower compute.
+
+The family's discovered, canonical member is \textbf{continuous U-prioritized
+coverage} (\CU{}: an FB target-score weighted by the local count of angularly
+under-determined cells, $\lambda=0.5$): it reduces the residual oracle CRLB
+bound at mission end by a median of \textbf{20.9\%} relative to FB across four
+regimes (Holm-significant in three of four, Fisher combined $p\approx 0$),
+\textbf{with no coverage regression} and a corroborating reduction in
+never-observed cells. The effect is robust across $\lambda \in [0.25, 2.0]$
+(a plateau, not a knife-edge), conditional on sparse-obstacle environments, and
+specific to the budget-limited regime: in unbounded episodes final localization
+quality is at parity.
+
+We interpret the results as evidence that config-count richness is a reliable
+state witness that becomes an operating lever precisely when mission time ---
+not distance --- is the scarce resource. A centralized perfect oracle
+(E5, $n = 40\times2$) regresses both metrics, and the local-vs-global ladder
+isolates why: the same config-count signal reduces the residual bound
+$\sim$+30\% when scored locally and regresses when the same under-set is fused
+globally. Re-running both oracle signals in \CU's{} own local movement frame
+(E5-CORRECTED, $n=40$) confirms the effect is the \emph{signal}, not the
+oracle's global movement frame --- evidence that \textbf{locality, not signal
+strength}, is what makes the accuracy/coverage trade-off attainable.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -788,22 +791,32 @@ CU$\leftrightarrow$RA routing switch adds no per-decision overhead --- the
 trigger is a single free-count comparison, not an extra policy.
 
 \begin{table}[t]
-\caption{CPU/decision, A6\_obs005, $n = 10$, single process (GDOP and Hybrid
-rows from their own interleaved same-session benchmarks; absolute values are not
-cross-session comparable on this machine, per-session ratios are).}
+\caption{CPU/decision, A6\_obs005, $n = 10$, single process. Top group: the
+main interleaved benchmark (Random, \FB, \CU, \RA, Entropy-Frac). Bottom group:
+GDOP and Hybrid rows from their own interleaved same-session benchmarks, each
+against its in-session \CU{} reference (1.58 ms for GDOP; CU-norm 1.77 ms for
+the hybrid). Absolute values are not cross-session comparable on this machine;
+the ratio column is against the in-session \CU{} reference.}
 \label{tab:cpu}
 \centering
-\begin{tabular}{l c}
+\begin{tabular}{l c c}
 \toprule
-Method & ms/decision (median) \\
+Method & ms/decision (median) & ratio (vs session ref) \\
 \midrule
-Random & 0.74 \\
-Frontier-Bounded & 2.16 \\
-Coverage-U & 2.17 \\
-Hybrid & 1.77 \\
-Richness-Angular & 3.55 \\
-GDOP & 3.63 \\
-Entropy-Frac & 2.52 \\
+\multicolumn{3}{c}{\textbf{Main benchmark}} \\
+\midrule
+Random & 0.74 & 0.34$\times$ \\
+Frontier-Bounded & 2.16 & 1.00$\times$ \\
+Coverage-U & 2.17 & 1.00$\times$ \\
+Richness-Angular & 3.55 & 1.64$\times$ \\
+Entropy-Frac & 2.52 & 1.16$\times$ \\
+\midrule
+\multicolumn{3}{c}{\textbf{GDOP/Hybrid sessions (own benchmarks)}} \\
+\midrule
+Coverage-U & 1.58 & 1.00$\times$ \\
+GDOP & 3.63 & 2.30$\times$ \\
+Coverage-U-norm & 1.77 & 1.00$\times$ \\
+Hybrid & 1.77 & 1.00$\times$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1065,25 +1078,27 @@ aggregation smooths the config-count noise that \CU's{} under-count bonus
 amplifies.
 
 \begin{table*}[t]
-\caption{Sweep B ($n = 40$ paired): \CU{} and \RA{} vs FB on \texttt{mean\_bound\_final} at mission end (budget $T$) under self-localization noise $\sigma$ (cells); oracle keeps true geometry.}
+\caption{Sweep B ($n = 40$ paired): \CU{} and \RA{} vs FB on \texttt{mean\_bound\_final} at mission end (budget $T$) under self-localization noise $\sigma$ (cells); oracle keeps true geometry. Last three columns: \RA{} vs \CU{} (rel-red\% relative to \CU{}, positive = RA better), Holm across the two regimes of each variant.}
 \label{tab:sweepB}
 \centering
-\begin{tabular}{l c c c c c c c}
+\begin{tabular}{l c c c c c c c c c c}
 \toprule
-Regime & $\sigma$ & Method & FB bound & Method bound & rel-red\% & $p$ & $p$\_Holm \\
+Regime & $\sigma$ & Method & FB bound & Method bound & rel-red\% & $p$ & $p$\_Holm & \multicolumn{3}{c}{\RA{} vs \CU{}} \\
+\cmidrule(lr){9-11}
+& & & & & & & & rel-red\% & $p$ & $p$\_Holm \\
 \midrule
-\multicolumn{8}{c}{\textbf{A3 (3 UAVs)}} \\
+\multicolumn{11}{c}{\textbf{A3 (3 UAVs)}} \\
 \midrule
-A3 (3 UAVs) & 0.5 & \CU & 0.0227 & 0.0193 & +14.8 & 0.0178 & 0.0447 \\
-A3 (3 UAVs) & 0.5 & \RA & 0.0227 & 0.0195 & +10.5 & 0.0232 & 0.0464 \\
-A3 (3 UAVs) & 1.0 & \CU & 0.0226 & 0.0235 & -3.8 & 0.7547 & 0.7547 \\
-A3 (3 UAVs) & 1.0 & \RA & 0.0226 & 0.0210 & +3.3 & 0.0548 & 0.0548 \\
-\multicolumn{8}{c}{\textbf{A6 (6 UAVs)}} \\
+A3 (3 UAVs) & 0.5 & \CU & 0.0227 & 0.0193 & +14.8 & 0.0178 & 0.0447 & --- & --- & --- \\
+A3 (3 UAVs) & 0.5 & \RA & 0.0227 & 0.0195 & +10.5 & 0.0232 & 0.0464 & -3.7 & 0.7954 & 0.7954 \\
+A3 (3 UAVs) & 1.0 & \CU & 0.0226 & 0.0235 & -3.8 & 0.7547 & 0.7547 & --- & --- & --- \\
+A3 (3 UAVs) & 1.0 & \RA & 0.0226 & 0.0210 & +3.3 & 0.0548 & 0.0548 & +13.2 & 0.0288 & 0.0288 \\
+\multicolumn{11}{c}{\textbf{A6 (6 UAVs)}} \\
 \midrule
-A6 (6 UAVs) & 0.5 & \CU & 0.0223 & 0.0177 & +20.8 & 0.0017 & 0.0067 \\
-A6 (6 UAVs) & 0.5 & \RA & 0.0223 & 0.0191 & +18.8 & 0.0015 & 0.0051 \\
-A6 (6 UAVs) & 1.0 & \CU & 0.0259 & 0.0220 & +14.9 & 0.0224 & 0.0447 \\
-A6 (6 UAVs) & 1.0 & \RA & 0.0259 & 0.0205 & +18.1 & 0.0017 & 0.0051 \\
+A6 (6 UAVs) & 0.5 & \CU & 0.0223 & 0.0177 & +20.8 & 0.0017 & 0.0067 & --- & --- & --- \\
+A6 (6 UAVs) & 0.5 & \RA & 0.0223 & 0.0191 & +18.8 & 0.0015 & 0.0051 & -6.6 & 0.6948 & 0.7954 \\
+A6 (6 UAVs) & 1.0 & \CU & 0.0259 & 0.0220 & +14.9 & 0.0224 & 0.0447 & --- & --- & --- \\
+A6 (6 UAVs) & 1.0 & \RA & 0.0259 & 0.0205 & +18.1 & 0.0017 & 0.0051 & +9.5 & 0.0278 & 0.0288 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -1116,29 +1131,31 @@ $+5.5\%$, $ns$): RA's margin over the movement frame is also budget-robust,
 with no coverage regression vs FB in any cell.
 
 \begin{table*}[t]
-\caption{Sweep C ($n = 40$ paired): \CU{} and \RA{} vs FB across mission budgets $T = \{0.3, 0.5, 0.7, 0.9\} \times$ FB \texttt{steps\_90}.}
+\caption{Sweep C ($n = 40$ paired): \CU{} and \RA{} vs FB across mission budgets $T = \{0.3, 0.5, 0.7, 0.9\} \times$ FB \texttt{steps\_90}. Last three columns: \RA{} vs \CU{} (rel-red\% relative to \CU{}, positive = RA better), Holm across the two regimes of each variant.}
 \label{tab:sweepC}
 \centering
-\begin{tabular}{l c c c c c c c}
+\begin{tabular}{l c c c c c c c c c c}
 \toprule
-Regime & $T{\times}$FB & Method & FB bound & Method bound & rel-red\% & $p$ & $p$\_Holm \\
+Regime & $T{\times}$FB & Method & FB bound & Method bound & rel-red\% & $p$ & $p$\_Holm & \multicolumn{3}{c}{\RA{} vs \CU{}} \\
+\cmidrule(lr){9-11}
+& & & & & & & & rel-red\% & $p$ & $p$\_Holm \\
 \midrule
-\multicolumn{8}{c}{\textbf{A3 (3 UAVs)}} \\
+\multicolumn{11}{c}{\textbf{A3 (3 UAVs)}} \\
 \midrule
-A3 (3 UAVs) & 0.3 & \CU & 0.0545 & 0.0386 & +29.2 & $<$0.0001 & $<$0.0001 \\
-A3 (3 UAVs) & 0.3 & \RA & 0.0545 & 0.0373 & +31.7 & $<$0.0001 & $<$0.0001 \\
-A3 (3 UAVs) & 0.5 & \CU & 0.0350 & 0.0280 & +20.1 & $<$0.0001 & $<$0.0001 \\
-A3 (3 UAVs) & 0.5 & \RA & 0.0350 & 0.0254 & +27.4 & $<$0.0001 & $<$0.0001 \\
-A3 (3 UAVs) & 0.9 & \CU & 0.0125 & 0.0113 & +9.1 & 0.2265 & 0.2265 \\
-A3 (3 UAVs) & 0.9 & \RA & 0.0125 & 0.0096 & +23.1 & $<$0.0001 & 0.0001 \\
-\multicolumn{8}{c}{\textbf{A6 (6 UAVs)}} \\
+A3 (3 UAVs) & 0.3 & \CU & 0.0545 & 0.0386 & +29.2 & $<$0.0001 & $<$0.0001 & --- & --- & --- \\
+A3 (3 UAVs) & 0.3 & \RA & 0.0545 & 0.0373 & +31.7 & $<$0.0001 & $<$0.0001 & +3.5 & 0.0025 & 0.0025 \\
+A3 (3 UAVs) & 0.5 & \CU & 0.0350 & 0.0280 & +20.1 & $<$0.0001 & $<$0.0001 & --- & --- & --- \\
+A3 (3 UAVs) & 0.5 & \RA & 0.0350 & 0.0254 & +27.4 & $<$0.0001 & $<$0.0001 & +9.1 & 0.0394 & 0.0394 \\
+A3 (3 UAVs) & 0.9 & \CU & 0.0125 & 0.0113 & +9.1 & 0.2265 & 0.2265 & --- & --- & --- \\
+A3 (3 UAVs) & 0.9 & \RA & 0.0125 & 0.0096 & +23.1 & $<$0.0001 & 0.0001 & +15.4 & 0.0142 & 0.0283 \\
+\multicolumn{11}{c}{\textbf{A6 (6 UAVs)}} \\
 \midrule
-A6 (6 UAVs) & 0.3 & \CU & 0.0449 & 0.0361 & +19.5 & $<$0.0001 & $<$0.0001 \\
-A6 (6 UAVs) & 0.3 & \RA & 0.0449 & 0.0324 & +27.9 & $<$0.0001 & $<$0.0001 \\
-A6 (6 UAVs) & 0.5 & \CU & 0.0333 & 0.0254 & +23.8 & $<$0.0001 & $<$0.0001 \\
-A6 (6 UAVs) & 0.5 & \RA & 0.0333 & 0.0229 & +31.2 & $<$0.0001 & $<$0.0001 \\
-A6 (6 UAVs) & 0.9 & \CU & 0.0139 & 0.0123 & +11.1 & 0.0058 & 0.0117 \\
-A6 (6 UAVs) & 0.9 & \RA & 0.0139 & 0.0117 & +16.0 & 0.0008 & 0.0008 \\
+A6 (6 UAVs) & 0.3 & \CU & 0.0449 & 0.0361 & +19.5 & $<$0.0001 & $<$0.0001 & --- & --- & --- \\
+A6 (6 UAVs) & 0.3 & \RA & 0.0449 & 0.0324 & +27.9 & $<$0.0001 & $<$0.0001 & +10.4 & 0.0024 & 0.0025 \\
+A6 (6 UAVs) & 0.5 & \CU & 0.0333 & 0.0254 & +23.8 & $<$0.0001 & $<$0.0001 & --- & --- & --- \\
+A6 (6 UAVs) & 0.5 & \RA & 0.0333 & 0.0229 & +31.2 & $<$0.0001 & $<$0.0001 & +9.8 & 0.0029 & 0.0058 \\
+A6 (6 UAVs) & 0.9 & \CU & 0.0139 & 0.0123 & +11.1 & 0.0058 & 0.0117 & --- & --- & --- \\
+A6 (6 UAVs) & 0.9 & \RA & 0.0139 & 0.0117 & +16.0 & 0.0008 & 0.0008 & +5.5 & 0.4125 & 0.4125 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -1173,25 +1190,27 @@ three of the four cells (+10.3\% at 2.5/A3, +13.2\% at 2.5/A6, +9.2\% at
 near-parity boundary the CU rows show at $R = 1.25$.
 
 \begin{table*}[t]
-\caption{Sweep D ($n = 40$ paired): \CU{} and \RA{} vs FB under reduced proximity-fusion range $R \in \{2.5, 1.25\}$ cells (default $R =$ FOV $= 5$).}
+\caption{Sweep D ($n = 40$ paired): \CU{} and \RA{} vs FB under reduced proximity-fusion range $R \in \{2.5, 1.25\}$ cells (default $R =$ FOV $= 5$). Last three columns: \RA{} vs \CU{} (rel-red\% relative to \CU{}, positive = RA better), Holm across the two regimes of each variant.}
 \label{tab:sweepD}
 \centering
-\begin{tabular}{l c c c c c c c}
+\begin{tabular}{l c c c c c c c c c c}
 \toprule
-Regime & $R$ & Method & FB bound & Method bound & rel-red\% & $p$ & $p$\_Holm \\
+Regime & $R$ & Method & FB bound & Method bound & rel-red\% & $p$ & $p$\_Holm & \multicolumn{3}{c}{\RA{} vs \CU{}} \\
+\cmidrule(lr){9-11}
+& & & & & & & & rel-red\% & $p$ & $p$\_Holm \\
 \midrule
-\multicolumn{8}{c}{\textbf{A3 (3 UAVs)}} \\
+\multicolumn{11}{c}{\textbf{A3 (3 UAVs)}} \\
 \midrule
-A3 (3 UAVs) & 2.5 & \CU & 0.0268 & 0.0217 & +19.2 & 0.0014 & 0.0014 \\
-A3 (3 UAVs) & 2.5 & \RA & 0.0268 & 0.0194 & +27.4 & $<$0.0001 & $<$0.0001 \\
-A3 (3 UAVs) & 1.25 & \CU & 0.0282 & 0.0208 & +26.2 & $<$0.0001 & $<$0.0001 \\
-A3 (3 UAVs) & 1.25 & \RA & 0.0282 & 0.0209 & +25.9 & $<$0.0001 & $<$0.0001 \\
-\multicolumn{8}{c}{\textbf{A6 (6 UAVs)}} \\
+A3 (3 UAVs) & 2.5 & \CU & 0.0268 & 0.0217 & +19.2 & 0.0014 & 0.0014 & --- & --- & --- \\
+A3 (3 UAVs) & 2.5 & \RA & 0.0268 & 0.0194 & +27.4 & $<$0.0001 & $<$0.0001 & +10.3 & 0.0111 & 0.0141 \\
+A3 (3 UAVs) & 1.25 & \CU & 0.0282 & 0.0208 & +26.2 & $<$0.0001 & $<$0.0001 & --- & --- & --- \\
+A3 (3 UAVs) & 1.25 & \RA & 0.0282 & 0.0209 & +25.9 & $<$0.0001 & $<$0.0001 & -0.3 & 0.5272 & 0.5272 \\
+\multicolumn{11}{c}{\textbf{A6 (6 UAVs)}} \\
 \midrule
-A6 (6 UAVs) & 2.5 & \CU & 0.0254 & 0.0199 & +21.6 & $<$0.0001 & $<$0.0001 \\
-A6 (6 UAVs) & 2.5 & \RA & 0.0254 & 0.0173 & +31.9 & $<$0.0001 & $<$0.0001 \\
-A6 (6 UAVs) & 1.25 & \CU & 0.0233 & 0.0196 & +15.7 & 0.0010 & 0.0014 \\
-A6 (6 UAVs) & 1.25 & \RA & 0.0233 & 0.0178 & +23.5 & $<$0.0001 & $<$0.0001 \\
+A6 (6 UAVs) & 2.5 & \CU & 0.0254 & 0.0199 & +21.6 & $<$0.0001 & $<$0.0001 & --- & --- & --- \\
+A6 (6 UAVs) & 2.5 & \RA & 0.0254 & 0.0173 & +31.9 & $<$0.0001 & $<$0.0001 & +13.2 & 0.0141 & 0.0141 \\
+A6 (6 UAVs) & 1.25 & \CU & 0.0233 & 0.0196 & +15.7 & 0.0010 & 0.0014 & --- & --- & --- \\
+A6 (6 UAVs) & 1.25 & \RA & 0.0233 & 0.0178 & +23.5 & $<$0.0001 & $<$0.0001 & +9.2 & 0.0185 & 0.0371 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -1219,21 +1238,23 @@ vs \CU{} is near-parity in A3 ($-6.1\%$, $ns$) and positive in A6 (+6.9\%,
 Holm-sig), the familiar near-parity / positive boundary pattern.
 
 \begin{table*}[t]
-\caption{Sweep E ($n = 40$ paired): \CU{} and \RA{} vs FB on \texttt{mean\_bound\_final} at mission end (budget $T$) under bearing-measurement noise $\sigma_\theta = 2^\circ$ applied to the local angular observations; oracle keeps true geometry.}
+\caption{Sweep E ($n = 40$ paired): \CU{} and \RA{} vs FB on \texttt{mean\_bound\_final} at mission end (budget $T$) under bearing-measurement noise $\sigma_\theta = 2^\circ$ applied to the local angular observations; oracle keeps true geometry. Last three columns: \RA{} vs \CU{} (rel-red\% relative to \CU{}, positive = RA better), Holm across the two regimes of the variant.}
 \label{tab:sweepE}
 \centering
-\begin{tabular}{l c c c c c c c}
+\begin{tabular}{l c c c c c c c c c c}
 \toprule
-Regime & $\sigma_\theta$ (deg) & Method & FB bound & Method bound & rel-red\% & $p$ & $p$\_Holm \\
+Regime & $\sigma_\theta$ (deg) & Method & FB bound & Method bound & rel-red\% & $p$ & $p$\_Holm & \multicolumn{3}{c}{\RA{} vs \CU{}} \\
+\cmidrule(lr){9-11}
+& & & & & & & & rel-red\% & $p$ & $p$\_Holm \\
 \midrule
-\multicolumn{8}{c}{\textbf{A3 (3 UAVs)}} \\
+\multicolumn{11}{c}{\textbf{A3 (3 UAVs)}} \\
 \midrule
-A3 (3 UAVs) & 2.0 & \CU & 0.0222 & 0.0174 & +21.6 & $<$0.0001 & $<$0.0001 \\
-A3 (3 UAVs) & 2.0 & \RA & 0.0222 & 0.0185 & +16.8 & 0.0001 & 0.0001 \\
-\multicolumn{8}{c}{\textbf{A6 (6 UAVs)}} \\
+A3 (3 UAVs) & 2.0 & \CU & 0.0222 & 0.0174 & +21.6 & $<$0.0001 & $<$0.0001 & --- & --- & --- \\
+A3 (3 UAVs) & 2.0 & \RA & 0.0222 & 0.0185 & +16.8 & 0.0001 & 0.0001 & -6.1 & 0.3074 & 0.3074 \\
+\multicolumn{11}{c}{\textbf{A6 (6 UAVs)}} \\
 \midrule
-A6 (6 UAVs) & 2.0 & \CU & 0.0244 & 0.0187 & +23.4 & 0.0001 & 0.0001 \\
-A6 (6 UAVs) & 2.0 & \RA & 0.0244 & 0.0174 & +28.6 & $<$0.0001 & $<$0.0001 \\
+A6 (6 UAVs) & 2.0 & \CU & 0.0244 & 0.0187 & +23.4 & 0.0001 & 0.0001 & --- & --- & --- \\
+A6 (6 UAVs) & 2.0 & \RA & 0.0244 & 0.0174 & +28.6 & $<$0.0001 & $<$0.0001 & +6.9 & 0.0232 & 0.0464 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -1694,42 +1715,56 @@ so (Section~VIII).
 We asked whether a statistical-richness signal transposed to angular
 observation configurations can operate as a decision lever for multi-UAV
 bearing-only localization, evaluated honestly against a matched receding-horizon
-geometric control and a preregistered protocol. Three levers fail and one
-succeeds. Richness as target selection and as mode switching is falsified;
-continuous U-prioritized coverage (\CU) reduces the residual oracle CRLB bound
+geometric control and a preregistered protocol. The answer is a confirmed
+\emph{signal family} whose accuracy-optimal member is \textbf{Richness-Angular}
+(\RA{}). \RA{} delivers the highest peak accuracy (median residual-bound
+reduction of 23--32\% across regimes) and is the most robust accuracy driver
+under spatial fragmentation --- Holm-significant versus FB in 15 of 16 cells
+across all four confirmatory robustness axes (noise, budget, fusion range,
+bearing noise), with the single $\sigma = 1.0$ / A3 attenuation staying positive
+where \CU{} inverts --- the only family member with no robustness blind spot,
+and the only method whose edge survives 20\% obstacle density (Section~VI-F).
+Against the classical GDOP/FIM baseline it is accuracy-co-optimal but
+\textbf{coverage-dominant}: GDOP reaches the same accuracy only at the cost of a
+Holm-significant coverage regression, while \RA{} holds it at equal-or-better
+coverage and $\approx 2.3\times$ lower compute (Section~VI-F). The two
+dense-regime variants (dynamic normalization, the CU$\leftrightarrow$RA hybrid)
+are now evaluated rather than deferred.
+
+The family was reached through a documented discovery path rather than
+announced ex ante. The E4 primary \texttt{quality\_auc} is falsified (it
+saturates under finite budgets), and the richness signal is also falsified as a
+direct target-selection signal (Phase-1/E1) and as a mode-switching signal
+(Deploy-U, E2/E3); the confirmed effect is on a distinct pre-specified
+secondary metric, \texttt{mean\_bound\_final}, promoted to primary under a
+separate higher-power preregistration (E4-CONFIRM). Its canonical member,
+continuous U-prioritized coverage (\CU), reduces the residual oracle CRLB bound
 by a median 20.9\% at equal coverage under finite mission budgets, robustly
-across $\lambda$, in sparse-obstacle environments. The centralized perfect
-oracle regresses both metrics, and the decisive comparison is the
-local-vs-global ladder: the same config-count signal gains $\sim$+30\% when
-scored locally and regresses when the same under-set is fused globally.
-E5-CORRECTED confirms the conclusion with the movement frame held identical:
-even in \CU's{} own frame the global under-set signal regresses both metrics,
-so the effect is the signal's locality, not the oracle's frame.
+across $\lambda$ (a plateau, not a knife-edge); \CU{} provides a stable, equally
+cheap continuous weighting that is optimal in sparse environments and robust
+across its plateau.
+
+The practical reading is sharp: when mission time is the scarce resource, spend
+the remaining coverage on cells that are angularly under-determined --- and a
+cheap local singleton/doubleton count is sufficient to decide where.
+
+The centralized perfect oracle regresses both metrics, and the decisive
+comparison is the local-vs-global ladder: the same config-count signal gains
+$\sim$+30\% when scored locally and regresses when the same under-set is fused
+globally. E5-CORRECTED confirms the conclusion with the movement frame held
+identical: even in \CU's{} own frame the global under-set signal regresses both
+metrics, so the effect is the signal's locality, not the oracle's frame.
 \textbf{Locality} is therefore the property that makes the trade-off attainable,
-not a limitation of the decentralized setting. The practical reading is sharp:
-when mission time is the scarce resource, spend the remaining coverage on cells
-that are angularly under-determined --- and a cheap local singleton/doubleton
-count is sufficient to decide where. The two positive signals should be read as
-a trade-off rather than competing winners: \RA{} delivers the highest peak
-accuracy and is the most robust accuracy driver under spatial fragmentation ---
-the only method whose edge survives 20\% obstacle density --- and the
-confirmatory sweeps show it is the only member with no blind spot on any
-robustness axis (noise, budget, fusion range, bearing noise; Holm-significant
-vs FB in 15 of 16 sweep cells, with the single $\sigma = 1.0$ / A3 attenuation
-staying positive where \CU{} inverts); \CU{} provides a stable, equally cheap
-continuous weighting that is optimal in sparse environments and robust across
-its plateau. The GDOP/FIM baseline is accuracy-co-optimal with \RA{} but is
-coverage-dominated by the whole family at $\approx 2.3\times$ compute, and the
-two dense-regime variants (dynamic normalization, the CU$\leftrightarrow$RA
-hybrid) are now evaluated rather than deferred. The universal
-takeaway is not which signal wins, but the \textbf{locality} of the decision
-signal: the same under-set gains $\sim$+30\% scored locally and regresses fused
-globally. The topology dossier (Section~VI-L) sharpens the
-boundary: the advantage survives line-of-sight occlusion when routing choice is
-preserved (cluster topologies, reproduced at 3 and 6 UAVs) and flips negative
-only under single-path routing (perfect maze) --- routing redundancy, not
-spatial fragmentation per se, is the condition for the trade-off. The headline
-claims of the paper (sparse open space, Sections~VI-D--VI-K) are unchanged.
+not a limitation of the decentralized setting. The universal takeaway is not
+which signal wins, but the \textbf{locality} of the decision signal: the same
+under-set gains $\sim$+30\% scored locally and regresses fused globally.
+
+The topology dossier (Section~VI-L) sharpens the boundary: the advantage
+survives line-of-sight occlusion when routing choice is preserved (cluster
+topologies, reproduced at 3 and 6 UAVs) and flips negative only under
+single-path routing (perfect maze) --- routing redundancy, not spatial
+fragmentation per se, is the condition for the trade-off. The headline claims
+of the paper (sparse open space, Sections~VI-D--VI-K) are unchanged.
 
 \begin{thebibliography}{44}
 
