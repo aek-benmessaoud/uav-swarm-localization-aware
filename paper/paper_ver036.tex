@@ -55,7 +55,7 @@ Following a strict preregistered protocol (paired seeds, Wilcoxon +
 Holm-Bonferroni, coverage guard, hard validation gate), the confirmed result
 is a signal family --- config-count richness --- which, anchored against the
 Random floor and the classical occupancy-entropy baselines Entropy-Frac and
-Frontier+Entropy ($n = 40$ paired), is the only signal family that beats the
+Frontier+Entropy ($n = 40$ paired), is the only \emph{evaluated} signal family that beats the
 \FB{} movement frame on residual bound at equal-or-better coverage. Its
 accuracy-optimal member is \textbf{Richness-Angular} (\RA{}): a median
 residual-bound reduction of \textbf{23--32\%} across regimes, Holm-significant
@@ -63,7 +63,7 @@ versus FB in \textbf{15 of 16} cells across all four confirmatory robustness
 axes (self-localization noise, mission budget, fusion range, bearing noise) ---
 its only attenuation is $\sigma = 1.0$ in A3 ($+3.3\%$, $ns$), where it stays
 positive where \CU{} inverts --- the only family member with no robustness
-blind spot, and the only one whose edge survives 20\% obstacle density.
+blind spot, and the only evaluated one whose edge survives 20\% obstacle density.
 Against a benchmarked GDOP/FIM baseline it is accuracy-co-optimal but
 \textbf{coverage-dominant}, holding equal-or-better coverage at
 $\approx 2.3\times$ lower compute.
@@ -261,8 +261,10 @@ Chao1 and related estimators \cite{Chao1984, ChaoLee1992, ChaoYang1993,
 BurnhamOverton1978} estimate species richness from abundance data and are
 standard in ecology. Their use as \emph{decision signals for robot
 exploration} --- rather than as post-hoc analytics --- is, to the best of our
-knowledge, novel; this paper is the first to evaluate them transposed to
-angular configurations and under a preregistered falsification protocol.
+knowledge, not previously reported: we are not aware of prior work using
+Chao-type richness estimators as online decision signals for bearing-only
+robotic exploration, transposed to angular configurations, or under a
+preregistered falsification protocol.
 
 \subsection{Positioning}
 Relative to this literature, the paper makes three moves. First, it evaluates
@@ -272,7 +274,13 @@ information-driven exploration claims). Second, it uses a global oracle CRLB
 bound decoupled from the local decision signal, so accuracy claims are not
 circular. Third, it is organized around preregistered falsifications: we
 report honestly which operating levers failed before claiming the one that
-succeeded.
+succeeded. Throughout, we keep a fixed role hierarchy that the reader should
+not lose: \RA{} is the main proposed method (the accuracy-optimal member of
+the config-count family), \CU{} its cheap continuous companion, \FB{} the
+matched receding-horizon control, GDOP/FIM the classical information
+benchmark, and the centralized oracle (E5) a diagnostic bound; everything
+else (occupancy-entropy baselines, dynamic normalization, the hybrid) is
+experimental evidence around this spine, not a competing contribution.
 
 
 \section{Problem Formulation}
@@ -519,7 +527,7 @@ In the base scenario (S1: 6 UAVs, FOV 5, unbounded 4500-step episodes), the
 three phase-1 methods differ sharply on the movement frame and barely on the
 signal. Both FB ($p = 0.002$ vs Random) and RA ($p = 0.002$ vs Random) far
 exceed the Random floor, while RA is not significantly better than FB
-($p = 0.084$, $-1.5\%$): richness as a target-selection signal is falsified.
+($-1.5\%$, $p = 0.084$): richness as a target-selection signal is falsified.
 
 \begin{table*}[t]
 \caption{Phase-1 (E1), 6 UAVs, FOV 5, $n = 10$.}
@@ -1536,6 +1544,33 @@ space, Sections~VI-D--VI-K) are unchanged.
 
 
 \section{Discussion}
+Table~\ref{tab:hero} condenses the head-to-head against the \FB{} movement
+frame on the flagship 3-UAV regime (A3, $n = 40$ paired, Holm-corrected
+Wilcoxon; full battery in Table~\ref{tab:base}, timings in
+Table~\ref{tab:cpu}). The config-count candidates are the only evaluated
+family that reduce the residual bound at equal-or-better coverage, and the
+accuracy-optimal member \RA{} matches the classical GDOP/FIM baseline's bound
+reduction without its coverage cost and at $\approx 2.3\times$ lower compute.
+
+\begin{table*}[t]
+\caption{Hero synthesis (A3, $n = 40$ paired, 5\% obstacles). bound = median \texttt{mean\_bound\_final} at mission end (lower is better); $\Delta$ = relative change vs \FB{} (positive = lower bound); $p$ = Holm-corrected Wilcoxon vs \FB{} ($\dagger$ = significant); cov = final coverage (\%); ms/dec = median ms per decision (Table~\ref{tab:cpu}, GDOP from its own in-session benchmark).}
+\label{tab:hero}
+\centering
+\begin{tabular}{l c c c c c}
+\toprule
+Method & bound & $\Delta$ vs \FB{} & $p$ (Holm) & cov\% & ms/dec \\
+\midrule
+Random & 0.0534 & $-140.3\%$ & $<$0.0001 $\dagger$ & 20.3 & 0.74 \\
+Frontier-Bounded & 0.0222 & $+0.0\%$ & --- & 71.0 & 2.16 \\
+\textbf{Richness-Angular} & \textbf{0.0172} & \textbf{+22.6\%} & $<$0.0001 $\dagger$ & 73.3 & 3.55 \\
+Coverage-U & 0.0185 & $+17.0\%$ & $<$0.0001 $\dagger$ & 72.0 & 2.17 \\
+Entropy-Frac & 0.0190 & $+14.5\%$ & 0.0061 $\dagger$ & 70.6 & 2.52 \\
+Frontier+Entropy & 0.0185 & $+17.0\%$ & 0.0043 $\dagger$ & 70.3 & --- \\
+GDOP (centralized) & 0.0168 & $+24.6\%$ & $<$0.0001 $\dagger$ & 70.5 & 3.63 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
 \paragraph{The falsifications delimit where the signal works.}
 Richness configurations fail as a direct target-selection rule (E1), as a
 mode-switching rule (E2/E3), and fail to move the saturated binary quality
@@ -1623,6 +1658,10 @@ relax the two idealizations that matter for the claim. What is not modeled is
 outside the claim, not a gap in it: within this framework the campaign is
 complete --- falsifications, confirmation, robustness, and the local-vs-global
 ladder are all reported under the same locked protocol.
+This is a controlled simulation study designed to isolate the mechanism under
+paired, preregistered conditions; real-world validation with sensing,
+localization, dynamics, and communication imperfections remains future work
+(Section~IX).
 \begin{itemize}
 \item Sensing is idealized where it is not the object of study. The decision
 signal is deliberately tested under self-localization noise ($\sigma = 0.5,
@@ -1722,7 +1761,7 @@ under spatial fragmentation --- Holm-significant versus FB in 15 of 16 cells
 across all four confirmatory robustness axes (noise, budget, fusion range,
 bearing noise), with the single $\sigma = 1.0$ / A3 attenuation staying positive
 where \CU{} inverts --- the only family member with no robustness blind spot,
-and the only method whose edge survives 20\% obstacle density (Section~VI-F).
+and the only evaluated method whose edge survives 20\% obstacle density (Section~VI-F).
 Against the classical GDOP/FIM baseline it is accuracy-co-optimal but
 \textbf{coverage-dominant}: GDOP reaches the same accuracy only at the cost of a
 Holm-significant coverage regression, while \RA{} holds it at equal-or-better
