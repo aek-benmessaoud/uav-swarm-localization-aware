@@ -9,6 +9,8 @@ __pycache__/
 *.log
 *.err
 *.png
+!paper/figs/*.png
+!latex/figs/*.png
 
 # Generated PDFs — keep only the final manuscript PDF
 *.pdf
