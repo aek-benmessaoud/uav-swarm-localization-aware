@@ -12,6 +12,17 @@
 \newcommand{\CU}{Coverage-U}
 \newcommand{\FB}{Frontier-Bounded}
 \newcommand{\RA}{Richness-Angular}
+\newcommand{\ucnt}{u_{\mathrm{FOV}}}
+\newcommand{\fcnt}{f_{\mathrm{FOV}}}
+\newcommand{\farea}{A_{\mathrm{FOV}}}
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{\z@}%
+{3.0ex plus 1.5ex minus 1.5ex}{0.7ex plus 1ex minus 0ex}%
+{\normalfont\large\bfseries\scshape\centering}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
+{3.5ex plus 1.5ex minus 1.5ex}{0.7ex plus .5ex minus 0ex}%
+{\normalfont\normalsize\bfseries}}
+\makeatother
 
 \begin{document}
 
@@ -97,6 +108,15 @@ directions that a bearing-only estimator becomes well conditioned. In that
 setting the geometric spread of observations (angular diversity) is the
 quantity that matters, classically measured by GDOP (Geometric Dilution of
 Precision) or the Fisher information matrix \cite{Yarlagadda2000, Bishop2004}.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig1_concept.png}
+\caption{Concept of the studied setting: a UAV swarm performs bearing-only
+localization-aware exploration under limited-range communication and a finite
+mission budget.}
+\label{fig:concept}
+\end{figure*}
 
 A separate line of work has proposed \emph{information-driven} exploration
 signals --- map entropy \cite{Bourgault2002, Stachniss2005}, expected
@@ -289,10 +309,12 @@ cells. The primary continuous accuracy metric is the \emph{mean residual bound}
 across traversable cells at mission end, \texttt{mean\_bound\_final} (lower is
 better); the binary fraction of well-localized cells is
 \begin{equation}
-\mathrm{quality}(t) = \frac{\text{traversable cells with } b \le
-\texttt{QUALITY\_THRESHOLD} \text{ at step } t}{\text{traversable cells}},
+\mathrm{quality}(t) = \frac{N_{\text{tra}}\bigl(b \le \tau\bigr)}{N_{\text{tra}}},
 \end{equation}
-sampled every 25 steps (normalized AUC = \texttt{quality\_auc}).
+where $N_{\text{tra}}$ is the number of traversable cells, $\tau =
+\texttt{QUALITY\_THRESHOLD} = 1.5$, and $N_{\text{tra}}(b \le \tau)$ counts
+those with $b \le \tau$ at step $t$; sampled every 25 steps (normalized AUC =
+\texttt{quality\_auc}).
 
 \subsection{Communication model}
 Agents use limited-range communication: two agents within
@@ -349,14 +371,15 @@ variation to add independent configurations). It tests richness as a
 utility by a continuous target score
 \begin{equation}
 \mathrm{score}(\text{target}) = \frac{D}{H} - \lambda \cdot
-\frac{\texttt{under\_count\_FOV}(\text{target})}{\texttt{FOV\_area}},
+\frac{\ucnt(\text{target})}{\farea},
+\label{eq:score}
 \end{equation}
 where $D$ is the bounded-BFS distance to the target, $H$ the horizon, and
-\texttt{under\_count\_FOV} counts the \emph{known-free cells with $\leq 1$
-angular configuration} inside the target's sensing footprint, computed in
-$O(1)$ per candidate by an integral image. $\lambda = 0.5$ was fixed before any
-campaign (no tuning); $\lambda = 0$ is exactly FB (verified by an
-action-identical test). The hypothesis: with a finite mission time, standard
+$\ucnt$ --- the under-count signal --- counts the \emph{known-free cells with
+$\leq 1$ angular configuration} inside the target's sensing footprint,
+computed in $O(1)$ per candidate by an integral image. $\lambda = 0.5$ was
+fixed before any campaign (no tuning); $\lambda = 0$ is exactly FB (verified by
+an action-identical test). The hypothesis: with a finite mission time, standard
 coverage spends the remaining budget on frontier cells that are cheap to reach
 but leave residual localization error; biasing target choice toward
 under-observed regions buys residual accuracy at the same coverage cost.
@@ -365,7 +388,7 @@ under-observed regions buys residual accuracy at the same coverage cost.
 One boundary condition found in Section~VI-F motivates a proposed variant of
 the score: the \CU{} advantage vanishes at 20\% obstacle density, and part of
 the mechanism is signal dilution. The score above normalizes
-\texttt{under\_count\_FOV} by the constant square area \texttt{FOV\_area}; in a
+$\ucnt$ by the constant square area $\farea$; in a
 fragmented environment a large fraction of that window is blocked, so the same
 absolute under-count yields a smaller bonus and the signal is attenuated
 precisely where it is needed. The variant replaces the constant denominator by
@@ -373,7 +396,7 @@ the number of \emph{traversable} cells (free + unknown) actually inside the
 footprint:
 \begin{equation}
 \mathrm{score}(t) = \frac{D}{H} - \lambda \cdot
-\frac{\texttt{under\_count\_FOV}(t)}{\texttt{free\_count\_FOV}(t)},
+\frac{\ucnt(t)}{\fcnt(t)},
 \end{equation}
 which keeps the bonus normalized by what the sensor can actually observe. It
 is a two-line change to the integral-image computation and is the first natural
@@ -431,11 +454,11 @@ confirmation campaign (E4-CONFIRM, E4-PARETO).
 
 \subsection{Experiment map}
 
-\begin{table}[t]
+\begin{table*}[t]
 \caption{Experiment map. All stages preregistered; E4-CONFIRM and E4-PARETO fixed $\lambda = 0.5$ and budgets before any data were seen.}
 \label{tab:map}
 \centering
-\begin{tabular}{l c c c c}
+\begin{tabular}{l l l l c l}
 \toprule
 Stage & Question & Primary & $n$ & Verdict \\
 \midrule
@@ -450,7 +473,7 @@ E5-DIAG & Oracle failure: calibration or structure? & mean\_bound\_final & 40 & 
 E5-CORRECTED & Local frame + global signal? & mean\_bound\_final & 40 & FAIL (locality confirmed) \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 
 \section{Results}
@@ -470,7 +493,7 @@ signal. Both FB ($p = 0.002$ vs Random) and RA ($p = 0.002$ vs Random) far
 exceed the Random floor, while RA is not significantly better than FB
 ($p = 0.084$, $-1.5\%$): richness as a target-selection signal is falsified.
 
-\begin{table}[t]
+\begin{table*}[t]
 \caption{Phase-1 (E1), 6 UAVs, FOV 5, $n = 10$.}
 \label{tab:e1}
 \centering
@@ -483,7 +506,7 @@ Frontier-Bounded & 0.940 [0.939--0.942] & 1.000 & 350 & 0.0000 \\
 Richness-Angular & 0.926 [0.918--0.935] & 1.000 & 575 & 0.0000 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 
 \begin{figure}[t]
@@ -503,7 +526,7 @@ $-1.1\%$ (threshold +8\%), with no Holm significance --- richness as a
 mode-switching signal is falsified, and final localization quality is at parity
 everywhere (quality\_final = 1.0).
 
-\begin{table}[t]
+\begin{table*}[t]
 \caption{E2/E3: \texttt{steps\_dual} (first step with coverage $\geq 90\%$ and quality $\geq 0.9$). Gain threshold +8\%.}
 \label{tab:e23}
 \centering
@@ -525,7 +548,7 @@ A6 (6 UAVs) & 2325 & 2450 & -6.4 & 0.2188 & 0.6562 \\
 A6, 20\% obs & 2512 & 2300 & +9.0 & 0.0371 & 0.1484 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 
 \begin{figure*}[t]
@@ -556,7 +579,7 @@ relative reduction of
 never-observed cells is also Holm-significant in three of four regimes;
 A6\_obs020 is the single non-significant, mildly reversed regime:
 
-\begin{table}[t]
+\begin{table*}[t]
 \caption{E4-CONFIRM: \texttt{mean\_bound\_final} at mission end (budget $T$), $n = 40$ paired.}
 \label{tab:e4c}
 \centering
@@ -578,7 +601,7 @@ A6 (6 UAVs) & 0.0244 & 0.0181 & +25.7 & $<$0.0001 & $<$0.0001 \\
 A6, 20\% obs & 0.0232 & 0.0219 & +5.4 & 0.2214 & 0.2214 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 
 \begin{figure*}[t]
@@ -726,7 +749,7 @@ Sweeping $\lambda \in \{0.25, 0.5, 1.0, 2.0\}$ on the two confirmed regimes
 (A3, A6) at $n = 40$ shows the reduction is stable --- even slightly increasing
 --- and never at the cost of coverage:
 
-\begin{table}[t]
+\begin{table*}[t]
 \caption{E4-PARETO: relative reduction of \texttt{mean\_bound\_final} vs FB at each $\lambda$ ($n = 40$ paired), with median final coverage in parentheses. $* =$ Holm-significant vs FB (Wilcoxon, $p < 0.05$).}
 \label{tab:pareto}
 \centering
@@ -742,7 +765,7 @@ A3 (3 UAVs) & +17.0\%* (72\% cov) & +17.0\%* (72\% cov) & +16.4\%* (70\% cov) & 
 A6 (6 UAVs) & +23.9\%* (68\% cov) & +25.7\%* (69\% cov) & +23.4\%* (66\% cov) & +26.6\%* (67\% cov) \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 
 \begin{figure*}[t]
@@ -764,7 +787,7 @@ end.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{fig_qualitative_traj.png}
+\includegraphics[width=\textwidth,height=0.85\textheight,keepaspectratio]{fig_qualitative_traj.png}
 \caption{Representative trajectories (rows: A3 median, A3 p75, A6 median, A6
 p75; columns: FB, CU). Obstacles in grey, final UAV positions in black.
 \CU{} re-observes under-determined cells within the same bounded frame,
@@ -791,6 +814,8 @@ the coverage guard at the same time.
 \caption{E5 ladder ($n = 40$ paired): \texttt{mean\_bound\_final} and final coverage for Frontier-Bounded (FB), \CU{} (CU), and the two centralized oracles (Config, CRLB).}
 \label{tab:e5}
 \centering
+\small
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
 Regime & FB mb & CU mb & Conf mb & CRLB mb & FB cov & CU cov & Conf cov & CRLB cov & red\_CU\% & red\_Conf\% & red\_CRLB\% \\
@@ -1187,7 +1212,7 @@ FB 0.569, both $p < 0.01$; visual traces show heavy corridor backtracking)
 instead of pushing dead-end progress. The directional MAexp-coherent check
 (RA $\geq$ CU) is not confirmed here (medians equal).
 
-\begin{table}[t]
+\begin{table*}[t]
 \caption{Maze family, \texttt{quality\_auc} at mission end (budget $T$) (higher better), $n = 40$ paired per campaign; rel-gain\% vs baseline B per the paper's convention; Holm across the 3 pairs. Perfect maze (A6): both candidates lose significantly. H=16: CU is bit-identical to H=8 ($-2.1\%$, Holm-sig), RA improves to ns.}
 \label{tab:topo_maze}
 \centering
@@ -1205,7 +1230,7 @@ maze perfect, H=16 (A6) & ANGULAR vs BOUNDED & 0.101 & 0.104 & -1.1 & 0.1058 & 0
 maze perfect, H=16 (A6) & ANGULAR vs U & 0.101 & 0.101 & +1.6 & 0.2424 & 0.2424 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 \paragraph{B. Loops at 10\%: the penalty is neutralized but no advantage is
 restored.}
@@ -1261,7 +1286,7 @@ the first time in the topology dossier} (+1.7\%, $p = 0.020$, Holm-sig). The
 maze failure is therefore caused by the loss of routing (single-path spanning
 tree), not by occlusion itself.
 
-\begin{table}[t]
+\begin{table*}[t]
 \caption{Cluster family, \texttt{quality\_auc} at mission end (budget $T$) (higher better), $n = 40$ paired per campaign. A6 (T=1354): RA +3.0\% vs FB (Holm-sig), RA $\geq$ CU confirmed, CU neutral. A3 pass-2 (T=2710): RA +2.6\% vs FB (Holm-sig), RA vs CU +6.3\% (strongest delta), CU neutral.}
 \label{tab:topo_cluster}
 \centering
@@ -1279,7 +1304,7 @@ clusters 20\% (A3) & ANGULAR vs BOUNDED & 0.799 & 0.769 & +2.6 & 0.0076 & 0.0152
 clusters 20\% (A3) & ANGULAR vs U & 0.799 & 0.754 & +6.3 & $<$0.0001 & 0.0002 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 \begin{figure*}[t]
 \centering
@@ -1359,7 +1384,7 @@ reversed), marking a boundary of the effect: dense obstacles fragment the
 known-free space and dilute the signal. The mechanism is an integral-image
 dilution: the \CU{} bonus scores under-observed cells through a fixed-area FOV
 window, so under dense obstacles the window's footprint is dominated by blocked
-cells --- the \texttt{under\_count\_FOV} integral image is starved, the FOV
+cells --- the $\ucnt$ integral image is starved, the FOV
 area stays constant, and the average bonus per free cell collapses even though
 genuinely under-determined cells exist. \RA{} avoids this dilution because it
 scores the raw per-cell richness without averaging over the FOV area, which is
@@ -1478,7 +1503,7 @@ preregistered evaluation before any dense-terrain claim. Second, a low-cost
 hybrid policy that runs \CU{} in open terrain and switches to the angular
 signal when the local window is mostly blocked: both methods share the same
 Frontier-Bounded movement frame, so the switch is a threshold on the local
-blocked fraction (e.g.\ \texttt{free\_count\_FOV} / \texttt{FOV\_area} $< 0.5$,
+blocked fraction (e.g.\ $\fcnt / \farea < 0.5$,
 exactly the free-count statistic introduced in Section~IV-E) rather than a new
 planner. Because \RA{} is the only method whose advantage survives 20\% obstacle
 density and \CU{} the stable, cheaper continuous weighting in open terrain
