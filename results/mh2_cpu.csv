@@ -1,0 +1,4 @@
+method,runs,ms_per_decision_median,ms_per_decision_iqr_lo,ms_per_decision_iqr_hi,policy_cpu_s_median
+Frontier-Bounded,4,1.5918,1.5869,1.7269,15.2812
+Coverage-U,4,1.578,1.5658,1.6016,15.1484
+GDOP,4,3.6328,3.5465,3.9307,34.875

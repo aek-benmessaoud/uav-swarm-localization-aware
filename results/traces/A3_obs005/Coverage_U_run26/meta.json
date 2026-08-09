@@ -1,0 +1,23 @@
+{
+  "method": "Coverage-U",
+  "regime": "A3_obs005",
+  "run": 26,
+  "env_seed": 26000,
+  "budget": 3200,
+  "num_agents": 3,
+  "obstacle_ratio": 0.05,
+  "grid_size": 100,
+  "fov_radius": 5,
+  "sample_steps": [
+    0,
+    800,
+    1600,
+    2400,
+    3200
+  ],
+  "final_coverage": 64.09473684210526,
+  "mean_bound_final": 0.024081271464227155,
+  "quality_final": 0.9917894736842106,
+  "quality_auc": 0.8364054276315784,
+  "undetermined_final": 0.0017894736842105263
+}

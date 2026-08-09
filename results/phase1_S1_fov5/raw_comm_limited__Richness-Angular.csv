@@ -1,0 +1,11 @@
+method,info_model,run,env_seed,steps_90,steps_95,steps_99,censored,success_90,overlap,final_U,final_coverage,alpha_mean,chao_version,fov_radius,obstacle_ratio,num_agents,comm_range,fusion_events,rendezvous_steps,alpha_sat_frac,fallback_frac,random_walk_frac,quality_auc,time_to_quality,quality_final,cluster_cap_hit_frac,undetermined_final,wall_time_s
+Richness-Angular,comm_limited,0,0,2608,2762,3408,0,100.0,0.547619,0.0,100.0,,original,5.0,0.05,6,,7296,2287,,0.869772,0.0,0.935037,500,1.0,0.438209,0.0,218.482267
+Richness-Angular,comm_limited,1,1000,2402,2730,2930,0,100.0,0.503502,0.0,100.0,,original,5.0,0.05,6,,3718,1699,,0.863551,0.0,0.94303,450,1.0,0.442649,0.0,167.374321
+Richness-Angular,comm_limited,2,2000,2118,2325,2885,0,100.0,0.489412,0.0,100.0,,original,5.0,0.05,6,,4056,2062,,0.857366,0.0,0.923474,725,1.0,0.438534,0.0,129.034666
+Richness-Angular,comm_limited,3,3000,2456,2601,2836,0,100.0,0.472749,0.0,100.0,,original,5.0,0.05,6,,4086,1413,,0.814513,0.0,0.933389,375,1.0,0.417764,0.0,122.852049
+Richness-Angular,comm_limited,4,4000,1960,2086,2823,0,100.0,0.457019,0.0,100.0,,original,5.0,0.05,6,,4007,1877,,0.867753,0.0,0.916141,650,1.0,0.452965,0.0,152.979658
+Richness-Angular,comm_limited,5,5000,2435,2563,2842,0,100.0,0.505208,0.0,100.0,,original,5.0,0.05,6,,6508,2027,,0.847765,0.0,0.903081,850,1.0,0.427696,0.0,192.669081
+Richness-Angular,comm_limited,6,6000,2565,2880,3156,0,100.0,0.556116,0.0,100.0,,original,5.0,0.05,6,,2206,1510,,0.874135,0.0,0.951013,450,1.0,0.44543,0.0,135.980325
+Richness-Angular,comm_limited,7,7000,2232,2475,3021,0,100.0,0.516835,0.0,100.0,,original,5.0,0.05,6,,3930,1856,,0.862688,0.0,0.926543,700,1.0,0.42999,0.0,168.115864
+Richness-Angular,comm_limited,8,8000,2115,2302,2543,0,100.0,0.435532,0.0,100.0,,original,5.0,0.05,6,,5239,1931,,0.860556,0.0,0.905936,800,1.0,0.432161,0.0,175.141217
+Richness-Angular,comm_limited,9,9000,1881,2139,2397,0,100.0,0.412274,0.0,100.0,,original,5.0,0.05,6,,5131,1772,,0.863164,0.0,0.925652,375,1.0,0.442086,0.0,139.891201

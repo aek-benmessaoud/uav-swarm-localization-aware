@@ -1,0 +1,51 @@
+"""
+policies/frontier_entropy.py — Geometric + informational hybrid (V4).
+
+Candidates = FRONTIER cells (known free adjacent to >= 1 unknown) reachable
+within a bounded-BFS horizon R. Utility = fractional entropy gain over the
+window, / (BFS layer + eps). The first BFS step is the action.
+"""
+
+import numpy as np
+
+from analysis.compute_entropy import (frontier_mask, info_gain_frac_map,
+                                      select_target)
+from policies._common import bounded_bfs, explore_action
+
+
+class FrontierEntropyPolicy:
+    def __init__(self, seed=None, fov_radius=5, horizon=8, window=None,
+                 p_known=0.9, eps=1.0, tie_eps=1e-3):
+        self.rng = np.random.default_rng(seed)
+        self.fov_radius = fov_radius
+        self.horizon = horizon
+        self.window = window if window is not None else fov_radius
+        self.p_known = p_known
+        self.eps = eps
+        self.tie_eps = tie_eps
+        self.fallback = 0
+        self.random_walk = 0
+
+    def select_action(self, env, agent_id):
+        env.update_local_memory(agent_id, self.fov_radius)
+        info = env.get_local_info(agent_id)
+        unknown = (~info["known"]).astype(np.float64)
+        frontier = frontier_mask(info["known"], info["obs"], unknown)
+
+        D, curdir = bounded_bfs(env, agent_id, max_depth=self.horizon)
+        gain = info_gain_frac_map(info["known"], info["obs"], self.window,
+                                  p_known=self.p_known)
+
+        utility = np.full_like(D, -np.inf, dtype=np.float64)
+        pos = D > 0
+        utility[pos] = gain[pos] / (D[pos] + self.eps)
+
+        action = select_target(utility, D, curdir, frontier, self.rng,
+                               tie_eps=self.tie_eps)
+        if action is None:
+            self.fallback += 1
+            action, mode = explore_action(env, agent_id, self.rng)
+            if mode == "explore_random":
+                self.random_walk += 1
+            return action, "Frontier+Entropy", mode, None
+        return int(action), "Frontier+Entropy", "frontier_entropy", None

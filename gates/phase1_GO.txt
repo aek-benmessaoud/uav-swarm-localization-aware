@@ -1,0 +1,9 @@
+Phase 1a validation gate
+generated : 2026-08-05 01:25:11
+runs      : 10 x 1500 steps (grid 100)
+policy    : Frontier-Bounded
+cells     : 95000  localizable: 91530
+sigma_bearing = 1.0 deg
+rho(bound,error)|localiz = 0.638 (min 0.5, p<0.05)
+rho(U_local,error)       = -0.457 (max -0.4, p<0.05)
+status    : GO

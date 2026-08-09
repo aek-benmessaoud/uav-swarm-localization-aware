@@ -1,0 +1,11 @@
+method,info_model,run,env_seed,steps_90,steps_95,steps_99,censored,success_90,overlap,final_U,final_coverage,alpha_mean,chao_version,fov_radius,obstacle_ratio,num_agents,comm_range,fusion_events,rendezvous_steps,alpha_sat_frac,fallback_frac,random_walk_frac,quality_auc,time_to_quality,quality_final,cluster_cap_hit_frac,undetermined_final,wall_time_s
+Frontier-Bounded,comm_limited,0,0,6180,6549,7072,0,100.0,0.352949,0.0,100.0,,original,5.0,0.05,2,,1113,1113,,0.891826,0.0,0.904746,1775,1.0,0.438472,0.0,36.440136
+Frontier-Bounded,comm_limited,1,1000,6670,7053,7684,0,100.0,0.395444,0.0,100.0,,original,5.0,0.05,2,,789,789,,0.854824,0.0,0.920107,2075,1.0,0.425177,0.0,36.589342
+Frontier-Bounded,comm_limited,2,2000,6374,6733,7203,0,100.0,0.368771,0.0,100.0,,original,5.0,0.05,2,,1064,1064,,0.884902,0.0,0.869154,3450,1.0,0.4384,0.0,35.41654
+Frontier-Bounded,comm_limited,3,3000,5346,5698,6187,0,100.0,0.279976,0.0,100.0,,original,5.0,0.05,2,,1319,1319,,0.882732,0.0,0.897587,1275,1.0,0.439328,0.0,31.440784
+Frontier-Bounded,comm_limited,4,4000,7254,7563,8142,0,100.0,0.443142,0.0,100.0,,original,5.0,0.05,2,,693,693,,0.900399,0.0,0.916664,1025,1.0,0.452666,0.0,39.708406
+Frontier-Bounded,comm_limited,5,5000,6711,7062,7537,0,100.0,0.403341,0.0,100.0,,original,5.0,0.05,2,,1096,1096,,0.895917,0.0,0.9354,1275,1.0,0.447618,0.0,37.939232
+Frontier-Bounded,comm_limited,6,6000,5535,5839,6696,0,100.0,0.309593,0.0,100.0,,original,5.0,0.05,2,,1557,1557,,0.888792,0.0,0.86922,2100,1.0,0.44275,0.0,35.013766
+Frontier-Bounded,comm_limited,7,7000,5263,5528,6186,0,100.0,0.265161,0.0,100.0,,original,5.0,0.05,2,,1467,1467,,0.879622,0.0,0.9047,800,1.0,0.428392,0.0,31.702939
+Frontier-Bounded,comm_limited,8,8000,5797,6071,6496,0,100.0,0.317725,0.0,100.0,,original,5.0,0.05,2,,913,913,,0.87746,0.0,0.877546,2925,1.0,0.430449,0.0,33.436926
+Frontier-Bounded,comm_limited,9,9000,5598,6133,6627,0,100.0,0.306164,0.0,100.0,,original,5.0,0.05,2,,1677,1677,,0.881592,0.0,0.90137,1700,1.0,0.442244,0.0,33.35412

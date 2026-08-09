@@ -1,0 +1,4 @@
+regime,method,runs,ms_per_decision_median,ms_per_decision_iqr_lo,ms_per_decision_iqr_hi,policy_cpu_s_median
+A6_obs005,Frontier-Bounded,4,5.2629,5.2604,5.3092,50.5234
+A6_obs005,Coverage-U,4,2.2778,2.2607,2.8662,21.8672
+A6_obs005,Richness-Angular,4,5.0399,4.3473,6.4258,48.3828

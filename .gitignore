@@ -1,0 +1,15 @@
+# Caches
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Generated binaries / traces / logs (regenerable)
+*.npy
+*.npz
+*.log
+*.err
+*.png
+
+# Generated PDFs — keep only the final manuscript PDF
+*.pdf
+!results/paper_ver035.pdf

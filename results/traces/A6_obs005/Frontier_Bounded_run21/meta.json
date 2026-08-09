@@ -1,0 +1,23 @@
+{
+  "method": "Frontier-Bounded",
+  "regime": "A6_obs005",
+  "run": 21,
+  "env_seed": 21000,
+  "budget": 1600,
+  "num_agents": 6,
+  "obstacle_ratio": 0.05,
+  "grid_size": 100,
+  "fov_radius": 5,
+  "sample_steps": [
+    0,
+    400,
+    800,
+    1200,
+    1600
+  ],
+  "final_coverage": 67.23157894736842,
+  "mean_bound_final": 0.02935533093145751,
+  "quality_final": 0.9787368421052631,
+  "quality_auc": 0.8353273026315787,
+  "undetermined_final": 0.015157894736842105
+}

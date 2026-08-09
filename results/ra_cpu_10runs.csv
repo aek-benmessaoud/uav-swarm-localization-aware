@@ -1,0 +1,2 @@
+regime,method,runs,ms_per_decision_median,ms_per_decision_iqr_lo,ms_per_decision_iqr_hi,policy_cpu_s_median
+A6_obs005,Richness-Angular,10,6.0522,3.6471,7.9321,58.1016

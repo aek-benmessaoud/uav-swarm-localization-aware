@@ -1,0 +1,23 @@
+{
+  "method": "Frontier-Bounded",
+  "regime": "A3_obs005",
+  "run": 25,
+  "env_seed": 25000,
+  "budget": 3200,
+  "num_agents": 3,
+  "obstacle_ratio": 0.05,
+  "grid_size": 100,
+  "fov_radius": 5,
+  "sample_steps": [
+    0,
+    800,
+    1600,
+    2400,
+    3200
+  ],
+  "final_coverage": 71.89473684210526,
+  "mean_bound_final": 0.025258609820486607,
+  "quality_final": 0.9867368421052631,
+  "quality_auc": 0.8619350328947374,
+  "undetermined_final": 0.008842105263157894
+}
