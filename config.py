@@ -12,6 +12,8 @@ local decision signal).
 All run_*.py, analysis and tests must import constants from here.
 """
 
+import os
+
 import numpy as np
 
 # ==================== ENVIRONMENT DEFAULTS ====================
@@ -101,7 +103,10 @@ CHAO_DEFAULT_VARIANT = "bias_cap"
 # Greedy clustering: assign to the nearest existing center, otherwise start a
 # new cluster, bounded by CLUSTER_CAP per cell. Cluster-count saturation is
 # monitored via cluster_cap_hit_frac (decision signal, mirrors alpha_sat_frac).
-ANG_TOL_DEG = 15.0
+# ANG_TOL_DEG is overridable via the ANG_TOL_DEG environment variable so
+# sensitivity sweeps can re-run the config-count family under a different
+# definition of "independent angular configuration" in spawned workers.
+ANG_TOL_DEG = float(os.environ.get("ANG_TOL_DEG", "15.0"))
 CLUSTER_CAP = 8
 
 # ==================== PROJECT08: ORACLE CRLB EVALUATION =====================

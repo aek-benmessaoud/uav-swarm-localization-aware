@@ -1049,7 +1049,7 @@ which keeps the coverage term in the trade-off --- the mechanism that makes
 matters is the \textbf{locality of the decision signal}, not its strength.
 
 \subsection{Robustness sweeps (confirmatory)}
-Following the preregistered campaign, we ran four confirmatory robustness
+Following the preregistered campaign, we ran five confirmatory robustness
 sweeps on the two confirmed regimes (A3, A6; $n = 40$ paired each, same seed
 ladder, same
 Wilcoxon + Holm protocol) to map the boundary conditions of the \CU{} effect.
@@ -1064,9 +1064,12 @@ metric stays decoupled from the injected error. \emph{Budget.} The mission
 budget is scaled to $\{0.3, 0.5, 0.9\} \times$ FB \texttt{steps\_90} (0.7 is
 the confirmed operating point). \emph{Fusion range.} The proximity-fusion
 communication range is reduced to $\{2.5, 1.25\}$ cells (default =
-FOV = 5). All tables report \CU{} vs FB on \texttt{mean\_bound\_final} at
-mission end (budget $T$) with Holm-corrected paired Wilcoxon $p$-values and the
-final-coverage guard.
+FOV = 5). \emph{Angular tolerance.} The method's own hyperparameter --- the
+threshold that defines an independent configuration --- is varied over
+$\texttt{ANG\_TOL} \in \{5, 10, 20, 30\}^\circ$ around the locked $15^\circ$
+operating point (paragraph F). All tables report \CU{} vs FB on
+\texttt{mean\_bound\_final} at mission end (budget $T$) with Holm-corrected
+paired Wilcoxon $p$-values and the final-coverage guard.
 
 \paragraph{B. Noise: the effect survives moderate self-localization error.}
 At $\sigma = 0.5$ the residual-bound reduction remains Holm-significant in both
@@ -1275,22 +1278,90 @@ config-count signal is computed from noisy bearings ($\sigma_\theta = 2^\circ$).
 \label{fig:sweepE}
 \end{figure*}
 
+\paragraph{F. ANG\_TOL: the advantage is robust to the definition of an
+independent configuration.}
+The config-count signal counts ``independent angular configurations''
+(Section~II-B), defined by the angular tolerance \texttt{ANG\_TOL} between
+cluster centers (locked operating point $15^\circ$). To check whether the
+confirmed effect hinges on this choice, we re-ran both config-count members
+under \texttt{ANG\_TOL} $\in \{5^\circ, 10^\circ, 20^\circ, 30^\circ\}$ on the
+two confirmed regimes ($n = 40$ paired each, same seed ladder and Wilcoxon +
+Holm protocol); the $15^\circ$ operating point and the \FB{} control are
+reused from the confirmed \texttt{budget\_*} campaign --- \FB{} does not read
+angular configurations, so it is \texttt{ANG\_TOL}-invariant. The advantage
+does not hinge on the threshold: \RA{}'s residual-bound reduction vs \FB{} is
+Holm-significant at every level in both regimes --- A3 $+18.6\%$ / $+19.9\%$ /
+$+22.6\%$ / $+19.9\%$ / $+19.4\%$ and A6 $+28.3\%$ / $+30.9\%$ / $+32.4\%$ /
+$+28.9\%$ / $+29.0\%$ for $5$ / $10$ / $15$ / $20$ / $30^\circ$
+(Table~\ref{tab:sweepF}) --- with the magnitude mildly peaked at the operating
+point $15^\circ$ and no coverage regression in any of the twenty cells. The
+tightest threshold ($5^\circ$, the most demanding definition of independence)
+preserves the edge for both members, where \RA{} and \CU{} reach near-parity
+in A3; the RA$\geq$CU ordering re-emerges at the looser thresholds (A6
+$10^\circ$: $+11.7\%$, Holm-sig; A6 $15^\circ$: $+8.9\%$, Holm-sig). The
+effect is therefore a property of config-count prioritization, not of the
+specific $15^\circ$ discretization of the signal.
+
+\begin{table*}[t]
+\caption{Sweep F ($n = 40$ paired): \CU{} and \RA{} vs FB on \texttt{mean\_bound\_final} at mission end (budget $T$) across \texttt{ANG\_TOL} $\in \{5,10,15,20,30\}^\circ$; $15^\circ$ is the locked operating point. Last three columns: \RA{} vs \CU{} (rel-red\% relative to \CU{}, positive = RA better), Holm across the five tolerance levels of each regime.}
+\label{tab:sweepF}
+\centering
+\setlength{\tabcolsep}{5.5pt}
+\begin{tabular}{l c c c c c c c c c c}
+\toprule
+Regime & ANG\_TOL$^\circ$ & Method & FB bound & Method bound & rel-red\% & $p$ & $p$\_Holm & \multicolumn{3}{c}{\RA{} vs \CU{}} \\
+\cmidrule(lr){9-11}
+& & & & & & & & rel-red\% & $p$ & $p$\_Holm \\
+\midrule
+\multicolumn{11}{c}{\textbf{A3 (3 UAVs)}} \\
+\midrule
+A3 (3 UAVs) & 5 & \CU & 0.0222 & 0.0177 & +20.3 & 0.0001 & 0.0003 & --- & --- & --- \\
+A3 (3 UAVs) & 5 & \RA & 0.0222 & 0.0181 & +18.6 & $<$0.0001 & $<$0.0001 & -2.1 & 0.7246 & 0.7446 \\
+A3 (3 UAVs) & 10 & \CU & 0.0222 & 0.0174 & +21.8 & $<$0.0001 & $<$0.0001 & --- & --- & --- \\
+A3 (3 UAVs) & 10 & \RA & 0.0222 & 0.0178 & +19.9 & $<$0.0001 & $<$0.0001 & -2.5 & 0.7446 & 0.7446 \\
+A3 (3 UAVs) & 15 & \CU & 0.0222 & 0.0185 & +17.0 & $<$0.0001 & $<$0.0001 & --- & --- & --- \\
+A3 (3 UAVs) & 15 & \RA & 0.0222 & 0.0172 & +22.6 & $<$0.0001 & $<$0.0001 & +6.7 & 0.1281 & 0.3843 \\
+A3 (3 UAVs) & 20 & \CU & 0.0222 & 0.0190 & +14.5 & $<$0.0001 & 0.0002 & --- & --- & --- \\
+A3 (3 UAVs) & 20 & \RA & 0.0222 & 0.0178 & +19.9 & $<$0.0001 & $<$0.0001 & +6.3 & 0.1000 & 0.3843 \\
+A3 (3 UAVs) & 30 & \CU & 0.0222 & 0.0197 & +11.6 & 0.0008 & 0.0008 & --- & --- & --- \\
+A3 (3 UAVs) & 30 & \RA & 0.0222 & 0.0179 & +19.4 & $<$0.0001 & $<$0.0001 & +8.8 & 0.0603 & 0.3013 \\
+\multicolumn{11}{c}{\textbf{A6 (6 UAVs)}} \\
+\midrule
+A6 (6 UAVs) & 5 & \CU & 0.0244 & 0.0182 & +25.4 & $<$0.0001 & $<$0.0001 & --- & --- & --- \\
+A6 (6 UAVs) & 5 & \RA & 0.0244 & 0.0175 & +28.3 & $<$0.0001 & $<$0.0001 & +3.9 & 0.5014 & 0.5014 \\
+A6 (6 UAVs) & 10 & \CU & 0.0244 & 0.0191 & +21.7 & $<$0.0001 & $<$0.0001 & --- & --- & --- \\
+A6 (6 UAVs) & 10 & \RA & 0.0244 & 0.0169 & +30.9 & $<$0.0001 & $<$0.0001 & +11.7 & 0.0041 & 0.0203 \\
+A6 (6 UAVs) & 15 & \CU & 0.0244 & 0.0181 & +25.7 & $<$0.0001 & $<$0.0001 & --- & --- & --- \\
+A6 (6 UAVs) & 15 & \RA & 0.0244 & 0.0165 & +32.4 & $<$0.0001 & $<$0.0001 & +8.9 & 0.0115 & 0.0461 \\
+A6 (6 UAVs) & 20 & \CU & 0.0244 & 0.0173 & +28.9 & $<$0.0001 & $<$0.0001 & --- & --- & --- \\
+A6 (6 UAVs) & 20 & \RA & 0.0244 & 0.0173 & +28.9 & $<$0.0001 & $<$0.0001 & +0.1 & 0.4437 & 0.5014 \\
+A6 (6 UAVs) & 30 & \CU & 0.0244 & 0.0193 & +21.0 & 0.0002 & 0.0002 & --- & --- & --- \\
+A6 (6 UAVs) & 30 & \RA & 0.0244 & 0.0173 & +29.0 & $<$0.0001 & $<$0.0001 & +10.1 & 0.0299 & 0.0897 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
 \paragraph{Interpretation.}
-The four sweeps jointly delimit the effect: it is robust to moderate
+The five sweeps jointly delimit the effect: it is robust to moderate
 self-localization noise ($\sigma = 0.5$ in both regimes; at $\sigma = 1.0$ it
 vanishes in A3 and survives in A6), to bearing-measurement noise on the signal
 itself ($\sigma_\theta = 2^\circ$, both regimes), and to short-range
 communication (down to $R = 1.25$) --- the three departures from the idealized
 setting that matter for real hardware --- and it is strongest precisely where
-the paper claims it operates (tight-to-moderate budgets). Across all four
-sweeps the \RA{} rows complete the grid: RA is Holm-significant vs FB in 15 of
+the paper claims it operates (tight-to-moderate budgets). A fifth axis,
+\texttt{ANG\_TOL} (paragraph F), varies the signal's own discretization rather
+than an environmental condition: \RA{} is Holm-significant vs FB across the
+whole $\{5^\circ$--$30^\circ\}$ range in both regimes, so the confirmed effect
+is not an artifact of the $15^\circ$ operating point. Across the four
+environmental sweeps the \RA{} rows complete the grid: RA is
+Holm-significant vs FB in 15 of
 16 cells (sigma-loc, budget, range, bearing $\times$ both regimes) --- the
 single exception being $\sigma = 1.0$ in A3, where its edge attenuates to
 $+3.3\%$ ($ns$, $p = 0.055$) instead of \CU's{} outright inversion there
 ($-3.8\%$) --- and RA
 beats \CU{} in every cell except the near-parity boundaries ($\sigma = 0.5$,
 $R = 1.25$ / A3, $0.9\times$ FB / A6, be2 / A3) --- \RA{} has no blind spot on
-any of the four robustness axes, which strengthens its role as the family's
+any of the five robustness axes, which strengthens its role as the family's
 accuracy-optimal member (Section~VI-F). The strict
 preregistration guard (no significant coverage regression) holds in every sweep
 cell except the $0.3\times$ FB / A6 cell and the $R = 1.25$ / A6 cell, each
